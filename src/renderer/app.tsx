@@ -1,9 +1,33 @@
 import React, { FC, Fragment, useEffect, useState } from 'react';
 
+// import ThemeSelector from './ThemeSelector';
+
 interface Tweet {
   text: string;
   videoPath?: string;
 }
+
+const ThemeSelector: FC = () => {
+  useEffect((): void => {
+    console.log('Test');
+  }, []);
+  return (
+    <Fragment>
+      <div>this is a theme selector</div>;
+    </Fragment>
+  );
+};
+
+const TweetContainer: FC = () => {
+  useEffect((): void => {
+    console.log('Test');
+  }, []);
+  return (
+    <Fragment>
+      <div>this is a tweet container</div>;
+    </Fragment>
+  );
+};
 
 const App: FC = () => {
   const [tweets, setTweets] = useState<Tweet[]>();
@@ -23,8 +47,9 @@ const App: FC = () => {
 
   return (
     <Fragment>
-      <div>Hello world!</div>
-      {tweets && <pre>{JSON.stringify(tweets, null, 4)}</pre>}
+      <ThemeSelector />
+      <TweetContainer />
+      {/* {tweets && <pre>{JSON.stringify(tweets, null, 4)}</pre>} */}
     </Fragment>
   );
 };
