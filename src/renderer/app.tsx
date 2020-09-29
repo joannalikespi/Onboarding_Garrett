@@ -1,5 +1,5 @@
 import React, { FC, Fragment, useEffect, useState } from 'react';
-import { Accordion, Button, Card } from 'react-bootstrap';
+import { Accordion, Button, ButtonGroup, Card, ToggleButton } from 'react-bootstrap';
 
 // import ThemeSelector from './ThemeSelector';
 
@@ -9,22 +9,40 @@ interface Tweet {
   id: string;
 }
 
-const ThemeSelector: FC = () => {
-  useEffect((): void => {
-    console.log('Test');
-  }, []);
+type ThemeSelectorProps = {
+  radioValue: string;
+  setRadioValue: React.Dispatch<React.SetStateAction<string>>;
+};
+
+const ThemeSelector = ({ radioValue, setRadioValue }: ThemeSelectorProps) => {
+  const radios = [
+    { name: 'Dark', value: 'dark' },
+    { name: 'Light', value: 'light' },
+  ];
   return (
-    <Fragment>
-      <div>this is a theme selector</div>;
-    </Fragment>
+    <ButtonGroup toggle>
+      {radios.map((radio, idx) => (
+        <ToggleButton
+          key={idx}
+          type="radio"
+          variant="secondary"
+          name="radio"
+          value={radio.value}
+          checked={radioValue === radio.value}
+          onChange={(e) => setRadioValue(e.currentTarget.value)}>
+          {radio.name}
+        </ToggleButton>
+      ))}
+    </ButtonGroup>
   );
 };
 
 type TweetContProps = {
   tweets: Tweet[];
+  theme: string;
 };
 
-const TweetContainer = ({ tweets }: TweetContProps) => {
+const TweetContainer = ({ tweets, theme }: TweetContProps) => {
   const [activeKeyState, setActiveKey] = useState<string>('');
 
   const handleActiveKeyChange = (activeKey: string) => {
@@ -36,7 +54,7 @@ const TweetContainer = ({ tweets }: TweetContProps) => {
   };
 
   return (
-    <Accordion activeKey={activeKeyState}>
+    <Accordion activeKey={activeKeyState} className={theme}>
       {tweets.map((tweet) => (
         <Card key={tweet.id}>
           <Card.Header>
@@ -59,6 +77,7 @@ const TweetContainer = ({ tweets }: TweetContProps) => {
 
 const App: FC = () => {
   const [tweetsList, setTweets] = useState<Tweet[]>();
+  const [radioValue, setRadioValue] = useState('light');
 
   useEffect((): void => {
     (async () => {
@@ -78,16 +97,16 @@ const App: FC = () => {
   }, []);
   return (
     <Fragment>
-      <ThemeSelector />
-      {tweetsExist(tweetsList)}
+      <ThemeSelector radioValue={radioValue} setRadioValue={setRadioValue} />
+      {tweetsExist(tweetsList, radioValue)}
       {/* {tweetsList && <pre>{JSON.stringify(tweetsList, null, 4)}</pre>} */}
     </Fragment>
   );
 };
 
-const tweetsExist = (tweetsList) => {
+const tweetsExist = (tweetsList: Tweet[] | undefined, theme: string) => {
   if (tweetsList) {
-    return <TweetContainer tweets={tweetsList} />;
+    return <TweetContainer tweets={tweetsList} theme={theme} />;
   } else {
     return <Fragment />;
   }
