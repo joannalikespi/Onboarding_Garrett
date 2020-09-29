@@ -1,7 +1,6 @@
 import React, { FC, Fragment, useEffect, useState } from 'react';
 import { Accordion, Button, ButtonGroup, Card, ToggleButton } from 'react-bootstrap';
-
-// import ThemeSelector from './ThemeSelector';
+import ReactPlayer from 'react-player/youtube';
 
 interface Tweet {
   text: string;
@@ -67,7 +66,10 @@ const TweetContainer = ({ tweets, theme }: TweetContProps) => {
             </Accordion.Toggle>
           </Card.Header>
           <Accordion.Collapse eventKey={tweet.id}>
-            <Card.Body>{tweet.text.substr(15)}</Card.Body>
+            <div>
+              <Card.Body>{tweet.text.substr(15)}</Card.Body>
+              {tweet.videoPath ? <ReactPlayer url={tweet.videoPath} /> : <div></div>}
+            </div>
           </Accordion.Collapse>
         </Card>
       ))}
@@ -90,6 +92,8 @@ const App: FC = () => {
       let i = 0;
       for (i; i < fetchedTweets.length; i++) {
         fetchedTweets[i].id = i.toString(10);
+        fetchedTweets[i].videoPath =
+          i % 2 == 0 ? 'https://www.youtube.com/watch?v=BGB6rvATmxY&list=RDBGB6rvATmxY&start_radio=1' : undefined;
       }
       setTweets(fetchedTweets);
       // eslint-disable-next-line no-console
