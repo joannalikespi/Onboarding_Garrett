@@ -1,6 +1,6 @@
 import React, { FC, Fragment, useEffect, useState } from 'react';
 import { Accordion, Button, ButtonGroup, Card, ToggleButton } from 'react-bootstrap';
-import ReactPlayer from 'react-player/youtube';
+import { Player } from 'video-react';
 
 interface Tweet {
   text: string;
@@ -68,7 +68,7 @@ const TweetContainer = ({ tweets, theme }: TweetContProps) => {
           <Accordion.Collapse eventKey={tweet.id}>
             <div>
               <Card.Body>{tweet.text.substr(15)}</Card.Body>
-              {tweet.videoPath ? <ReactPlayer url={tweet.videoPath} /> : <div></div>}
+              {tweet.videoPath ? <Player playsInline src={tweet.videoPath} /> : <div></div>}
             </div>
           </Accordion.Collapse>
         </Card>
@@ -92,8 +92,9 @@ const App: FC = () => {
       let i = 0;
       for (i; i < fetchedTweets.length; i++) {
         fetchedTweets[i].id = i.toString(10);
-        fetchedTweets[i].videoPath =
-          i % 2 == 0 ? 'https://www.youtube.com/watch?v=BGB6rvATmxY&list=RDBGB6rvATmxY&start_radio=1' : undefined;
+        fetchedTweets[i].videoPath = 'https://r-t-generator.herokuapp.com/' + fetchedTweets[i].videoPath;
+        // fetchedTweets[i].videoPath =
+        //   i % 2 == 0 ? 'https://www.youtube.com/watch?v=BGB6rvATmxY&list=RDBGB6rvATmxY&start_radio=1' : undefined;
       }
       setTweets(fetchedTweets);
       // eslint-disable-next-line no-console
