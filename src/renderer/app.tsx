@@ -62,12 +62,12 @@ const TweetContainer = ({ tweets, theme }: TweetContProps) => {
               variant="link"
               eventKey={tweet.id}
               onClick={() => handleActiveKeyChange(tweet.id)}>
-              {tweet.text.substr(0, 15)}
+              {tweet.text.split(' ').slice(0, 15).join(' ')}
             </Accordion.Toggle>
           </Card.Header>
           <Accordion.Collapse eventKey={tweet.id}>
             <div>
-              <Card.Body>{tweet.text.substr(15)}</Card.Body>
+              <Card.Body>{tweet.text.split(' ').slice(15).join(' ')}</Card.Body>
               {tweet.videoPath ? <Player playsInline src={tweet.videoPath} /> : <div></div>}
             </div>
           </Accordion.Collapse>
@@ -81,25 +81,39 @@ const App: FC = () => {
   const [tweetsList, setTweets] = useState<Tweet[]>();
   const [radioValue, setRadioValue] = useState('light');
 
-  useEffect((): void => {
-    (async () => {
-      let fetchedTweets: Tweet[];
-      do {
-        fetchedTweets = await fetch('https://r-t-generator.herokuapp.com/').then(
-          (response) => response.json() as Promise<Tweet[]>,
-        );
-      } while (!fetchedTweets.length);
-      let i = 0;
-      for (i; i < fetchedTweets.length; i++) {
-        fetchedTweets[i].id = i.toString(10);
-        fetchedTweets[i].videoPath = 'https://r-t-generator.herokuapp.com/' + fetchedTweets[i].videoPath;
-        // fetchedTweets[i].videoPath =
-        //   i % 2 == 0 ? 'https://www.youtube.com/watch?v=BGB6rvATmxY&list=RDBGB6rvATmxY&start_radio=1' : undefined;
-      }
-      setTweets(fetchedTweets);
-      // eslint-disable-next-line no-console
-    })().catch(console.error);
-  }, []);
+  const updateTweets = (tweets: Tweet[]) => {
+    // (async () => {
+    // console.log(tweets);
+    // do {
+    //   fetchedTweets = await fetch('https://r-t-generator.herokuapp.com/').then(
+    //     (response) => response.json() as Promise<Tweet[]>,
+    //   );
+    // } while (!fetchedTweets.length);
+    fetch('https://r-t-generator.herokuapp.com/')
+      .then((response) => response.json())
+      .then((data) => {
+        let fetchedTweets: Tweet[] = data;
+        let i = 0;
+        for (i; i < fetchedTweets.length; i++) {
+          fetchedTweets[i].id = (i + (tweets ? tweets : []).length).toString(10);
+          fetchedTweets[i].videoPath = fetchedTweets[i].videoPath
+            ? 'https://r-t-generator.herokuapp.com/' + fetchedTweets[i].videoPath
+            : undefined;
+        }
+        fetchedTweets = fetchedTweets.concat(tweets ? tweets : []);
+        console.log(fetchedTweets);
+        setTweets(fetchedTweets);
+      });
+    // eslint-disable-next-line no-console
+    // })().catch(console.error);
+  };
+
+  useEffect(() => {
+    const interval = setInterval((tweets: Tweet[] = tweetsList ? tweetsList : []) => {
+      updateTweets(tweets ? tweets : []);
+    }, 15000);
+    return () => clearInterval(interval);
+  }, [tweetsList]);
   return (
     <Fragment>
       <ThemeSelector radioValue={radioValue} setRadioValue={setRadioValue} />
@@ -111,9 +125,9 @@ const App: FC = () => {
 
 const tweetsExist = (tweetsList: Tweet[] | undefined, theme: string) => {
   if (tweetsList) {
-    return <TweetContainer tweets={tweetsList} theme={theme} />;
+    return <TweetContainer tweets={tweetsList.length > 25 ? tweetsList.slice(25) : tweetsList} theme={theme} />;
   } else {
-    return <Fragment />;
+    return <Fragment> No Tweets From Server </Fragment>;
   }
 };
 
