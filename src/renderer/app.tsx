@@ -82,13 +82,6 @@ const App: FC = () => {
   const [radioValue, setRadioValue] = useState('light');
 
   const updateTweets = (tweets: Tweet[]) => {
-    // (async () => {
-    // console.log(tweets);
-    // do {
-    //   fetchedTweets = await fetch('https://r-t-generator.herokuapp.com/').then(
-    //     (response) => response.json() as Promise<Tweet[]>,
-    //   );
-    // } while (!fetchedTweets.length);
     fetch('https://r-t-generator.herokuapp.com/')
       .then((response) => response.json())
       .then((data) => {
@@ -101,11 +94,8 @@ const App: FC = () => {
             : undefined;
         }
         fetchedTweets = fetchedTweets.concat(tweets ? tweets : []);
-        console.log(fetchedTweets);
         setTweets(fetchedTweets);
       });
-    // eslint-disable-next-line no-console
-    // })().catch(console.error);
   };
 
   useEffect(() => {
@@ -118,7 +108,6 @@ const App: FC = () => {
     <Fragment>
       <ThemeSelector radioValue={radioValue} setRadioValue={setRadioValue} />
       {tweetsExist(tweetsList, radioValue)}
-      {/* {tweetsList && <pre>{JSON.stringify(tweetsList, null, 4)}</pre>} */}
     </Fragment>
   );
 };
