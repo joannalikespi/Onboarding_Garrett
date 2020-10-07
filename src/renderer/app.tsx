@@ -1,6 +1,5 @@
 import React, { FC, Fragment, useEffect, useState } from 'react';
 import { Accordion, Button, ButtonGroup, Card, ToggleButton } from 'react-bootstrap';
-import { Player } from 'video-react';
 
 interface Tweet {
   text: string;
@@ -68,7 +67,7 @@ const TweetContainer = ({ tweets, theme }: TweetContProps) => {
           <Accordion.Collapse eventKey={tweet.id}>
             <div>
               <Card.Body>{tweet.text.split(' ').slice(15).join(' ')}</Card.Body>
-              {tweet.videoPath ? <Player playsInline src={tweet.videoPath} /> : <div></div>}
+              {tweet.videoPath ? <video controls playsInline src={tweet.videoPath} /> : <div></div>}
             </div>
           </Accordion.Collapse>
         </Card>
@@ -94,6 +93,7 @@ const App: FC = () => {
             : undefined;
         }
         fetchedTweets = fetchedTweets.concat(tweets ? tweets : []);
+        // console.log(fetchedTweets);
         setTweets(fetchedTweets);
       });
   };
@@ -113,7 +113,7 @@ const App: FC = () => {
 };
 
 const tweetsExist = (tweetsList: Tweet[] | undefined, theme: string) => {
-  if (tweetsList) {
+  if (tweetsList && tweetsList.length > 0) {
     return <TweetContainer tweets={tweetsList.length > 25 ? tweetsList.slice(25) : tweetsList} theme={theme} />;
   } else {
     return <Fragment> No Tweets From Server </Fragment>;
